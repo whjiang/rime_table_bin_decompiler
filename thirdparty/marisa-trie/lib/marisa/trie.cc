@@ -1,4 +1,4 @@
-#include "stdio.h"
+#include "mstdio.h"
 #include "iostream.h"
 #include "trie.h"
 #include "grimoire/trie.h"

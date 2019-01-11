@@ -7,7 +7,7 @@ The code is mainly copied from RIME source tree as I can't get RIME be compiled 
 
 Usage:
 ```
-rime_decode xxx.table.bin >xxx.dict.yaml.
+rime_table_bin_decompiler xxx.table.bin >xxx.dict.yaml.
 ```
 
 NOTE: The header of generated xxx.dict.yaml SHOULD be modified manually as this tool CAN'T read these meta info from xxx.table.bin.

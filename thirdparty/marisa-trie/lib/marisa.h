@@ -2,7 +2,7 @@
 #define MARISA_H_
 
 // "marisa/stdio.h" includes <cstdio> for I/O using std::FILE.
-#include "marisa/stdio.h"
+#include "marisa/mstdio.h"
 
 // "marisa/iostream.h" includes <iosfwd> for I/O using std::iostream.
 #include "marisa/iostream.h"

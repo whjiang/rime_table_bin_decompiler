@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
-project(rime_decode)
+project(rime_table_bin_decompiler)
 
-set(CMAKE_CXX_STANDARD 11)
-
+set(CMAKE_CXX_STANDARD 14)
 find_package(Boost REQUIRED COMPONENTS system filesystem)
 
 include_directories(.)
@@ -12,8 +11,21 @@ include_directories(marisa/grimoire/algorithm)
 include_directories(marisa/grimoire/io)
 include_directories(marisa/grimoire/trie)
 include_directories(marisa/grimoire/vector)
+include_directories(thirdparty/marisa-trie/bindings)
+include_directories(thirdparty/marisa-trie/bindings/perl)
+include_directories(thirdparty/marisa-trie/bindings/python)
+include_directories(thirdparty/marisa-trie/bindings/ruby)
+include_directories(thirdparty/marisa-trie/lib)
+include_directories(thirdparty/marisa-trie/lib/marisa)
+include_directories(thirdparty/marisa-trie/lib/marisa/grimoire)
+include_directories(thirdparty/marisa-trie/lib/marisa/grimoire/algorithm)
+include_directories(thirdparty/marisa-trie/lib/marisa/grimoire/io)
+include_directories(thirdparty/marisa-trie/lib/marisa/grimoire/trie)
+include_directories(thirdparty/marisa-trie/lib/marisa/grimoire/vector)
+include_directories(thirdparty/marisa-trie/tests)
+include_directories(thirdparty/marisa-trie/tools)
 
-add_executable(rime_decode main.cpp mapped_file.cc table.cc vocabulary.cc
+add_executable(rime_table_bin_decompiler main.cpp mapped_file.cc table.cc vocabulary.cc
         string_table.cc
         thirdparty/marisa-trie/lib/marisa/grimoire/algorithm/sort.h
         thirdparty/marisa-trie/lib/marisa/grimoire/io/mapper.cc
@@ -56,12 +68,14 @@ add_executable(rime_decode main.cpp mapped_file.cc table.cc vocabulary.cc
         thirdparty/marisa-trie/lib/marisa/query.h
         thirdparty/marisa-trie/lib/marisa/scoped-array.h
         thirdparty/marisa-trie/lib/marisa/scoped-ptr.h
-        thirdparty/marisa-trie/lib/marisa/stdio.h
+        thirdparty/marisa-trie/lib/marisa/mstdio.h
         thirdparty/marisa-trie/lib/marisa/trie.cc
         thirdparty/marisa-trie/lib/marisa/trie.h
         thirdparty/marisa-trie/lib/marisa.h
         )
 
-link_directories(rime_decode ${Boost_LIBRARY_DIRS})
 
-target_link_libraries(rime_decode ${Boost_LIBRARIES})
+
+link_directories(rime_table_bin_decompiler ${Boost_LIBRARY_DIRS})
+
+target_link_libraries(rime_table_bin_decompiler ${Boost_LIBRARIES})
