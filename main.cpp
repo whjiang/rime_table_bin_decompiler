@@ -16,6 +16,10 @@ void queryCode(rime::Table& table, int i0) {
         string code = table.GetSyllableById(i0);
         do {
             rime::string str = table.GetEntryText(*v.entry());
+            unsigned char c = str[0];
+            if(c < 20) {
+                continue;
+            }
             word2codeMap.insert(pair<string, string>(str, code));
             code2wordMap.insert(pair<string, string>(code, str));
             codeSet.insert(code);
