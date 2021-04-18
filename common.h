@@ -20,12 +20,8 @@
 #include <vector>
 #include <boost/optional.hpp>
 #define BOOST_BIND_NO_PLACEHOLDERS
-#ifdef BOOST_SIGNALS2
 #include <boost/signals2/connection.hpp>
 #include <boost/signals2/signal.hpp>
-#else
-#include <boost/signals.hpp>
-#endif
 
 #ifdef RIME_ENABLE_LOGGING
 #include <glog/logging.h>
@@ -81,13 +77,8 @@ inline an<T> New(Args&&... args) {
   return std::make_shared<T>(std::forward<Args>(args)...);
 }
 
-#ifdef BOOST_SIGNALS2
 using boost::signals2::connection;
 using boost::signals2::signal;
-#else
-using boost::signals::connection;
-using boost::signal;
-#endif
 
 }  // namespace rime
 
