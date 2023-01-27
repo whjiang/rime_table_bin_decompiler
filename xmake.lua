@@ -1,13 +1,13 @@
 add_rules("mode.debug", "mode.release")
 
-local boost_config = { signals2 = true, interprocess = true, iostreams = true }
-add_requires("boost", { system = false, configs = boost_config })
+add_requires("boost", {system = false})
 add_requires("marisa")
 target("rime-table-decompiler", function()
     set_kind("binary")
     add_files("src/*.cc")
     add_files("src/main.cpp")
-    add_packages("boost", "marisa")
+    add_packages("boost", {components = {"signals2", "interprocess", "iostreams"}})
+    add_packages("marisa")
 end)
 
 --
