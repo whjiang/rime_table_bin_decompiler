@@ -1,0 +1,25 @@
+name: Build Windows
+
+on: push
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      # setup xmake
+      - uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
+
+      # 拉取代码
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build
+        run: xmake -y
+
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: rtd-windows
+          path: ./build/bin

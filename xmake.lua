@@ -8,6 +8,7 @@ target("rime-table-decompiler", function()
     add_files("src/main.cpp")
     add_packages("boost", {components = {"signals2", "interprocess", "iostreams"}})
     add_packages("marisa")
+    set_targetdir("build/bin/")
 end)
 
 --
