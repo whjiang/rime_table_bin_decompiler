@@ -9,18 +9,22 @@
 
 这个项目中的大部分代码是从 librime 源代码中 copy 过来的。
 
-编译方法：(需要安装 xmake, unzip 等工具)
+## Usage
 
 ```bash
-git clone https://github.com/cxcn/rime-table-decompiler
-cd rime-table-decompiler
-xmake
-```
-
-用法:
-
-```
 rime-table-decompiler xxx.table.bin > xxx.dict.yaml.
 ```
 
-注意：因为`xxx.table.bin`没有元数据信息，所以生成的`xxx.dict.yaml`的文件头中的元数据是根据常见的元数据填进去的，可能是错误的。用户需要自己进行修改。
+windows 下可能会由于编码错误导致乱码，请先使用 cmd 执行 `chcp 65001`，再执行上面的命令。
+
+> 注意：因为`xxx.table.bin`没有元数据信息，所以生成的`xxx.dict.yaml`的文件头中的元数据是根据常见的元数据填进去的，可能是错误的。用户需要自己进行修改。
+
+## Build
+
+编译方法：(需要安装 xmake, unzip 等工具)
+
+```bash
+git clone https://github.com/imetool/rime-table-decompiler
+cd rime-table-decompiler
+xmake
+```

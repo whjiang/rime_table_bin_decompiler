@@ -1,6 +1,9 @@
 name: Build Linux
 
-on: push
+on:
+  push:
+    paths:
+      - "src/**"
 
 jobs:
   build:
