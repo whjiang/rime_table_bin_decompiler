@@ -15,8 +15,6 @@
 rime-table-decompiler xxx.table.bin > xxx.dict.yaml.
 ```
 
-windows 下可能会由于编码错误导致乱码，请先使用 cmd 执行 `chcp 65001`，再执行上面的命令。
-
 > 注意：因为`xxx.table.bin`没有元数据信息，所以生成的`xxx.dict.yaml`的文件头中的元数据是根据常见的元数据填进去的，可能是错误的。用户需要自己进行修改。
 
 ## Build
@@ -24,7 +22,7 @@ windows 下可能会由于编码错误导致乱码，请先使用 cmd 执行 `ch
 编译方法：(需要安装 xmake, unzip 等工具)
 
 ```bash
-git clone https://github.com/imetool/rime-table-decompiler
+git clone https://github.com/flowerime/rime-table-decompiler
 cd rime-table-decompiler
 xmake
 ```

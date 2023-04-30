@@ -4,6 +4,10 @@
 #include <map>
 #include <iterator>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 using namespace std;
 
 multimap<string, string> word2codeMap;
@@ -95,6 +99,10 @@ int main(int argc, char *argv[]) {
         fileName.erase(period_idx);
     }
 
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+    // system("chcp 65001");
+#endif
     cout << "---\n"
             "name: ";
     cout << fileName;
