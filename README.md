@@ -11,9 +11,13 @@
 
 ## Usage
 
+拖动文件到 `rime-table-decompiler` 或者命令行运行：
+
 ```bash
-rime-table-decompiler xxx.table.bin > xxx.dict.yaml.
+rime-table-decompiler xxx.table.bin
 ```
+
+自动输出到文件 `xxx.txt`。
 
 > 注意：因为`xxx.table.bin`没有元数据信息，所以生成的`xxx.dict.yaml`的文件头中的元数据是根据常见的元数据填进去的，可能是错误的。用户需要自己进行修改。
 
