@@ -9,7 +9,7 @@
 #define RIME_STRING_TABLE_H_
 
 #include <utility>
-#include "marisa.h"
+#include <marisa.h>
 #include "common.h"
 
 namespace rime {

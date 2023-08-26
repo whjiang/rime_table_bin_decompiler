@@ -2,10 +2,12 @@ add_rules("mode.debug", "mode.release")
 
 add_requires("boost", {system = false})
 add_requires("marisa")
+
 target("rime-table-decompiler", function()
     set_kind("binary")
     add_files("src/*.cc")
     add_files("src/main.cpp")
+
     add_packages("boost", {components = {"signals2", "interprocess", "iostreams"}})
     add_packages("marisa")
     set_targetdir("build/bin/")
