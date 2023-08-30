@@ -15,26 +15,24 @@
 #include "vocabulary.h"
 #include "string_table.h"
 
-#define RIME_TABLE_UNION(U, V, A, a, B, b) \
-    struct U { \
-      V value; \
-      const A& a() const { return *reinterpret_cast<const A*>(this); } \
-      const B& b() const { return *reinterpret_cast<const B*>(this); } \
-      A& a() { return *reinterpret_cast<A*>(this); } \
-      B& b() { return *reinterpret_cast<B*>(this); } \
-    }
+#define RIME_TABLE_UNION(U, V, A, a, B, b)                           \
+  struct U {                                                         \
+    V value;                                                         \
+    const A& a() const { return *reinterpret_cast<const A*>(this); } \
+    const B& b() const { return *reinterpret_cast<const B*>(this); } \
+    A& a() { return *reinterpret_cast<A*>(this); }                   \
+    B& b() { return *reinterpret_cast<B*>(this); }                   \
+  }
 
 namespace rime {
 
 namespace table {
 
-//union StringType {
-//  String str;
-//  StringId str_id;
-//};
-RIME_TABLE_UNION(StringType, int32_t,
-                 String, str,
-                 StringId, str_id);
+// union StringType {
+//   String str;
+//   StringId str_id;
+// };
+RIME_TABLE_UNION(StringType, int32_t, String, str, StringId, str_id);
 
 using Syllabary = Array<StringType>;
 
@@ -71,13 +69,11 @@ using TrunkIndex = Array<TrunkIndexNode>;
 
 using TailIndex = Array<LongEntry>;
 
-//union PhraseIndex {
-//  TrunkIndex trunk;
-//  TailIndex tail;
-//};
-RIME_TABLE_UNION(PhraseIndex, Array<char>,
-                 TrunkIndex, trunk,
-                 TailIndex, tail);
+// union PhraseIndex {
+//   TrunkIndex trunk;
+//   TailIndex tail;
+// };
+RIME_TABLE_UNION(PhraseIndex, Array<char>, TrunkIndex, trunk, TailIndex, tail);
 
 using Index = HeadIndex;
 
@@ -101,19 +97,22 @@ struct Metadata {
 class TableAccessor {
  public:
   TableAccessor() = default;
-  TableAccessor(const Code& index_code, const List<table::Entry>* entries,
-                double credibility = 1.0);
-  TableAccessor(const Code& index_code, const Array<table::Entry>* entries,
-                double credibility = 1.0);
-  TableAccessor(const Code& index_code, const table::TailIndex* code_map,
-                double credibility = 1.0);
+  TableAccessor(const Code& index_code,
+                const List<table::Entry>* entries,
+                double credibility = 0.0);
+  TableAccessor(const Code& index_code,
+                const Array<table::Entry>* entries,
+                double credibility = 0.0);
+  TableAccessor(const Code& index_code,
+                const table::TailIndex* code_map,
+                double credibility = 0.0);
 
-   bool Next();
+  RIME_API bool Next();
 
-   bool exhausted() const;
-   size_t remaining() const;
-   const table::Entry* entry() const;
-   const table::Code* extra_code() const;
+  RIME_API bool exhausted() const;
+  RIME_API size_t remaining() const;
+  RIME_API const table::Entry* entry() const;
+  RIME_API const table::Code* extra_code() const;
   const Code& index_code() const { return index_code_; }
   Code code() const;
   double credibility() const { return credibility_; }
@@ -124,7 +123,7 @@ class TableAccessor {
   const table::LongEntry* long_entries_ = nullptr;
   size_t size_ = 0;
   size_t cursor_ = 0;
-  double credibility_ = 1.0;
+  double credibility_ = 0.0;
 };
 
 using TableQueryResult = map<int, vector<TableAccessor>>;
@@ -134,47 +133,44 @@ class TableQuery;
 
 class Table : public MappedFile {
  public:
-   Table(const string& file_name);
+  RIME_API Table(const string& file_name);
   virtual ~Table();
 
-   bool Load();
-   bool Save();
-   bool Build(const Syllabary& syllabary,
+  RIME_API bool Load();
+  RIME_API bool Save();
+  RIME_API bool Build(const Syllabary& syllabary,
                       const Vocabulary& vocabulary,
                       size_t num_entries,
                       uint32_t dict_file_checksum = 0);
 
   bool GetSyllabary(Syllabary* syllabary);
-   string GetSyllableById(int syllable_id);
-   TableAccessor QueryWords(int syllable_id);
-   TableAccessor QueryPhrases(const Code& code);
-   /*
-   bool Query(const SyllableGraph& syll_graph,
+  RIME_API string GetSyllableById(int syllable_id);
+  RIME_API TableAccessor QueryWords(int syllable_id);
+  RIME_API TableAccessor QueryPhrases(const Code& code);
+  RIME_API bool Query(const SyllableGraph& syll_graph,
                       size_t start_pos,
                       TableQueryResult* result);
-                      */
-   string GetEntryText(const table::Entry& entry);
+  RIME_API string GetEntryText(const table::Entry& entry);
 
   uint32_t dict_file_checksum() const;
 
  private:
-  table::Index* BuildIndex(const Vocabulary& vocabulary,
-                           size_t num_syllables);
+  table::Index* BuildIndex(const Vocabulary& vocabulary, size_t num_syllables);
   table::HeadIndex* BuildHeadIndex(const Vocabulary& vocabulary,
                                    size_t num_syllables);
   table::TrunkIndex* BuildTrunkIndex(const Code& prefix,
                                      const Vocabulary& vocabulary);
   table::TailIndex* BuildTailIndex(const Code& prefix,
                                    const Vocabulary& vocabulary);
-  bool BuildPhraseIndex(Code code, const Vocabulary& vocabulary,
+  bool BuildPhraseIndex(Code code,
+                        const Vocabulary& vocabulary,
                         map<string, int>* index_data);
-  Array<table::Entry>* BuildEntryArray(const DictEntryList& entries);
-  bool BuildEntryList(const DictEntryList& src, List<table::Entry>* dest);
-  bool BuildEntry(const DictEntry& dict_entry, table::Entry* entry);
+  Array<table::Entry>* BuildEntryArray(const ShortDictEntryList& entries);
+  bool BuildEntryList(const ShortDictEntryList& src, List<table::Entry>* dest);
+  bool BuildEntry(const ShortDictEntry& dict_entry, table::Entry* entry);
 
   string GetString(const table::StringType& x);
-  bool AddString(const string& src, table::StringType* dest,
-                    double weight);
+  bool AddString(const string& src, table::StringType* dest, double weight);
   bool OnBuildStart();
   bool OnBuildFinish();
   bool OnLoad();

@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <cstring>
 #include <boost/utility.hpp>
+// #include <rime_api.h>
 #include "common.h"
 
 namespace rime {
@@ -24,30 +25,24 @@ class OffsetPtr {
   OffsetPtr(Offset offset) : offset_(offset) {}
   OffsetPtr(const T* ptr) : OffsetPtr(to_offset(ptr)) {}
   OffsetPtr(const OffsetPtr<T>& ptr) : OffsetPtr(ptr.get()) {}
-  OffsetPtr<T>& operator= (const OffsetPtr<T>& ptr) {
+  OffsetPtr<T>& operator=(const OffsetPtr<T>& ptr) {
     offset_ = to_offset(ptr.get());
     return *this;
   }
-  OffsetPtr<T>& operator= (const T* ptr) {
+  OffsetPtr<T>& operator=(const T* ptr) {
     offset_ = to_offset(ptr);
     return *this;
   }
-  operator bool() const {
-    return !!offset_;
-  }
-  T* operator-> () const {
-    return get();
-  }
-  T& operator* () const {
-    return *get();
-  }
-  T& operator[] (size_t index) const {
-    return *(get() + index);
-  }
+  operator bool() const { return !!offset_; }
+  T* operator->() const { return get(); }
+  T& operator*() const { return *get(); }
+  T& operator[](size_t index) const { return *(get() + index); }
   T* get() const {
-    if (!offset_) return NULL;
+    if (!offset_)
+      return NULL;
     return reinterpret_cast<T*>((char*)&offset_ + offset_);
   }
+
  private:
   Offset to_offset(const T* ptr) const {
     return ptr ? (char*)ptr - (char*)(&offset_) : 0;
@@ -89,7 +84,7 @@ class MappedFileImpl;
 class MappedFile : boost::noncopyable {
  protected:
   explicit MappedFile(const string& file_name);
-  virtual ~MappedFile();
+  RIME_API virtual ~MappedFile();
 
   bool Create(size_t capacity);
   bool OpenReadOnly();
@@ -113,8 +108,8 @@ class MappedFile : boost::noncopyable {
  public:
   bool Exists() const;
   bool IsOpen() const;
-  void Close();
-  bool Remove();
+  RIME_API void Close();
+  RIME_API bool Remove();
 
   template <class T>
   T* Find(size_t offset);
@@ -130,7 +125,7 @@ class MappedFile : boost::noncopyable {
 
 // member function definitions
 
-# define RIME_ALIGNED(size, T) ((size + alignof(T) - 1) & ~(alignof(T) - 1))
+#define RIME_ALIGNED(size, T) ((size + alignof(T) - 1) & ~(alignof(T) - 1))
 
 template <class T>
 T* MappedFile::Allocate(size_t count) {
@@ -143,7 +138,7 @@ T* MappedFile::Allocate(size_t count) {
   if (used_space + required_space > file_size) {
     // not enough space; grow the file
     size_t new_size = (std::max)(used_space + required_space, file_size * 2);
-    if(!Resize(new_size) || !OpenReadWrite())
+    if (!Resize(new_size) || !OpenReadWrite())
       return NULL;
   }
   T* ptr = reinterpret_cast<T*>(address() + used_space);
