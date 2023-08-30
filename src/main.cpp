@@ -23,19 +23,39 @@ string codeToString(rime::Table* table, const rime::Code code) {
   return str;
 }
 
+void access(rime::Table* table, rime::TableAccessor accessor) {
+  while (!accessor.exhausted()) {
+    auto word = table->GetEntryText(*accessor.entry());
+    auto code = codeToString(table, accessor.code());
+    fout << word << "\t" << code << endl;
+    accessor.Next();
+  }
+}
+
+// 递归遍历
+void recursion(rime::Table* table, ofstream& fout, rime::TableQuery* query) {
+  for (int i = 0; i < table->metadata_->num_syllables; i++) {
+    auto accessor = query->Access(i);
+    access(table, accessor);
+    if (query->Advance(i)) {
+      if (query->level() < 3) {
+        recursion(table, fout, query);
+      } else {
+        auto accessor = query->Access(0);
+        access(table, accessor);
+      }
+      query->Backdate();
+    }
+  }
+}
+
 void traversal(rime::Table* table, ofstream& fout) {
   auto metadata = table->metadata_;
   cout << "num_syllables: " << metadata->num_syllables << endl;
   cout << "num_entries: " << metadata->num_entries << endl;
 
-  for (int i = 0; i < metadata->num_syllables; i++) {
-    auto accessor = table->QueryWords(i);
-    while (!accessor.exhausted()) {
-      fout << table->GetEntryText(*accessor.entry()) << "\t";
-      fout << codeToString(table, accessor.code()) << endl;
-      accessor.Next();
-    }
-  }
+  rime::TableQuery query(table->index_);
+  recursion(table, fout, &query);
 }
 
 int main(int argc, char* argv[]) {

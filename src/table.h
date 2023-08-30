@@ -15,13 +15,21 @@
 #include "vocabulary.h"
 #include "string_table.h"
 
-#define RIME_TABLE_UNION(U, V, A, a, B, b)                           \
-  struct U {                                                         \
-    V value;                                                         \
-    const A& a() const { return *reinterpret_cast<const A*>(this); } \
-    const B& b() const { return *reinterpret_cast<const B*>(this); } \
-    A& a() { return *reinterpret_cast<A*>(this); }                   \
-    B& b() { return *reinterpret_cast<B*>(this); }                   \
+#define RIME_TABLE_UNION(U, V, A, a, B, b)      \
+  struct U {                                    \
+    V value;                                    \
+    const A& a() const {                        \
+      return *reinterpret_cast<const A*>(this); \
+    }                                           \
+    const B& b() const {                        \
+      return *reinterpret_cast<const B*>(this); \
+    }                                           \
+    A& a() {                                    \
+      return *reinterpret_cast<A*>(this);       \
+    }                                           \
+    B& b() {                                    \
+      return *reinterpret_cast<B*>(this);       \
+    }                                           \
   }
 
 namespace rime {
@@ -129,7 +137,37 @@ class TableAccessor {
 using TableQueryResult = map<int, vector<TableAccessor>>;
 
 struct SyllableGraph;
-class TableQuery;
+
+class TableQuery {
+ public:
+  TableQuery(table::Index* index) : lv1_index_(index) { Reset(); }
+
+  TableAccessor Access(SyllableId syllable_id, double credibility = 0.0) const;
+
+  // down to next level
+  bool Advance(SyllableId syllable_id, double credibility = 0.0);
+
+  // up one level
+  bool Backdate();
+
+  // back to root
+  void Reset();
+
+  size_t level() const { return level_; }
+
+ protected:
+  size_t level_ = 0;
+  Code index_code_;
+  vector<double> credibility_;
+
+ private:
+  bool Walk(SyllableId syllable_id);
+
+  table::HeadIndex* lv1_index_ = nullptr;
+  table::TrunkIndex* lv2_index_ = nullptr;
+  table::TrunkIndex* lv3_index_ = nullptr;
+  table::TailIndex* lv4_index_ = nullptr;
+};
 
 class Table : public MappedFile {
  public:
