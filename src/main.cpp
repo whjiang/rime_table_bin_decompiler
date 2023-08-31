@@ -9,25 +9,31 @@
 using namespace std;
 ofstream fout;
 
-string codeToString(rime::Table* table, const rime::Code code) {
+void outCode(rime::Table* table, const rime::Code code, ofstream& fout) {
   if (code.empty()) {
-    return "";
+    return;
   }
   auto item = code.begin();
-  string str = table->GetSyllableById(*item);
+  fout << table->GetSyllableById(*item);
   item++;
   for (; item != code.end(); ++item) {
-    str += " ";
-    str += table->GetSyllableById(*item);
+    fout << " ";
+    fout << table->GetSyllableById(*item);
   }
-  return str;
+  return;
 }
 
 void access(rime::Table* table, rime::TableAccessor accessor) {
   while (!accessor.exhausted()) {
     auto word = table->GetEntryText(*accessor.entry());
-    auto code = codeToString(table, accessor.code());
-    fout << word << "\t" << code << endl;
+    fout << word << "\t";
+    outCode(table, accessor.code(), fout);
+
+    auto weight = accessor.entry()->weight;
+    if (weight >= 0) {
+      fout << "\t" << exp(weight);
+    }
+    fout << endl;
     accessor.Next();
   }
 }
