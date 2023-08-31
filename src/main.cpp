@@ -1,5 +1,7 @@
 #include "table.h"
 #include <fstream>
+#include <iomanip>
+#include <ios>
 #include <iostream>
 
 #ifdef _WIN32
@@ -60,6 +62,8 @@ void traversal(rime::Table* table, ofstream& fout) {
   cout << "num_syllables: " << metadata->num_syllables << endl;
   cout << "num_entries: " << metadata->num_entries << endl;
 
+  fout << fixed;
+  fout << setprecision(0);
   rime::TableQuery query(table->index_);
   recursion(table, fout, &query);
 }
