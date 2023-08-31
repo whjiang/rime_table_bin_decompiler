@@ -2,8 +2,10 @@ add_rules("mode.debug", "mode.release")
 
 add_requires("boost", {system = false})
 add_requires("marisa")
+add_rules("plugin.compile_commands.autoupdate", {outputdir = ".vscode"})
 
 target("rime-table-decompiler", function()
+    set_languages("cxx17")
     set_kind("binary")
     add_files("src/*.cc")
     add_files("src/main.cpp")

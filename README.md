@@ -1,9 +1,6 @@
 # rime-table-decompiler
 
-> fork from <https://github.com/whjiang/rime_table_bin_decompiler>  
-> 从 cmake 迁移到 xmake。
-
-反编译 Rime 的`xxx.table.bin`文件。
+> fork from <https://github.com/whjiang/rime_table_bin_decompiler>
 
 这个项目可以简单的用于反编译 Rime 的`xxx.table.bin`以生成`xxx.dict.yaml`文本文件。
 

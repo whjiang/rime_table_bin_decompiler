@@ -1,11 +1,12 @@
-#include <cmath>
+﻿#include <cmath>
 #include <fstream>
 #include <iomanip>
 #include <ios>
 #include <iostream>
 #include "table.h"
-
-
+#if _MSC_VER >= 1600
+#pragma execution_character_set("utf-8")
+#endif
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -73,6 +74,10 @@ void traversal(rime::Table* table, ofstream& fout) {
 int main(int argc, char* argv[]) {
   string fileName(argv[1]);
 
+#ifdef _WIN32
+  SetConsoleOutputCP(65001);
+#endif
+  cout << "读取文件: " << fileName << endl;
   rime::Table table(fileName);
   table.Load();
 
@@ -111,7 +116,13 @@ int main(int argc, char* argv[]) {
           "    - length_in_range: [4, 10]\n"
           "      formula: \"AaBaCaZa\"\n"
           "...\n\n";
-
+  // clang-format on
   traversal(&table, fout);
+  cout << "已保存到: " << outputName << endl
+       << endl
+       << "作者: 单单 <me@nopdan.com>" << endl
+       << "更新日期: 2023-8-31" << endl
+       << "项目地址: https://github.com/nopdan/rime-table-decompiler" << endl;
+  system("pause");
   return 0;
 }
