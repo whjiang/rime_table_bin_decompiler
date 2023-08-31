@@ -1,8 +1,10 @@
-#include "table.h"
+#include <cmath>
 #include <fstream>
 #include <iomanip>
 #include <ios>
 #include <iostream>
+#include "table.h"
+
 
 #ifdef _WIN32
 #include <windows.h>
