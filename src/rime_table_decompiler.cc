@@ -4,6 +4,7 @@
 #include <codepage.h>
 #include <rime/dict/table.h>
 #include <fstream>
+#include <cmath>
 #include <iomanip>
 #include <ios>
 #include <iostream>
