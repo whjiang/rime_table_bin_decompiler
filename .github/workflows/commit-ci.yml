@@ -21,8 +21,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      # Restore xmake
+      - name: Restore
+        uses: actions/cache@v3
+        with:
+          path: ~/.xmake
+          key: ${{ runner.os }}-xmake
+
       - name: Build
         run: xmake -y
+
+      # Save xmake
+      - name: Save
+        uses: actions/cache@v3
+        with:
+          path: ~/.xmake
+          key: ${{ runner.os }}-xmake
 
       - name: Upload
         uses: actions/upload-artifact@v3
@@ -42,8 +56,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      # Restore xmake
+      - name: Restore
+        uses: actions/cache@v3
+        with:
+          path: ~/.xmake
+          key: ${{ runner.os }}-xmake
+
       - name: Build
         run: xmake -y
+
+      # Save xmake
+      - name: Save
+        uses: actions/cache@v3
+        with:
+          path: ~/.xmake
+          key: ${{ runner.os }}-xmake
 
       - name: Upload
         uses: actions/upload-artifact@v3
