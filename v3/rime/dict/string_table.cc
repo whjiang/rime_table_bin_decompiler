@@ -5,16 +5,15 @@
 // 2014-07-04 GONG Chen <chen.sst@gmail.com>
 //
 
-#include <sstream>
+#include <boost/iostreams/device/array.hpp>
+#include <boost/iostreams/stream.hpp>
 #include <rime/common.h>
 #include <rime/dict/string_table.h>
 
 namespace rime {
 
 StringTable::StringTable(const char* ptr, size_t size) {
-  std::stringstream stream;
-  stream.write(ptr, size);
-  stream >> trie_;
+  trie_.map(ptr, size);
 }
 
 bool StringTable::HasKey(const string& key) {
@@ -26,9 +25,10 @@ bool StringTable::HasKey(const string& key) {
 StringId StringTable::Lookup(const string& key) {
   marisa::Agent agent;
   agent.set_query(key.c_str());
-  if (trie_.lookup(agent)) {
+  if(trie_.lookup(agent)) {
     return agent.key().id();
-  } else {
+  }
+  else {
     return kInvalidStringId;
   }
 }
@@ -43,7 +43,8 @@ void StringTable::CommonPrefixMatch(const string& query,
   }
 }
 
-void StringTable::Predict(const string& query, vector<StringId>* result) {
+void StringTable::Predict(const string& query,
+                          vector<StringId>* result) {
   marisa::Agent agent;
   agent.set_query(query.c_str());
   result->clear();
@@ -57,7 +58,8 @@ string StringTable::GetString(StringId string_id) {
   agent.set_query(string_id);
   try {
     trie_.reverse_lookup(agent);
-  } catch (const marisa::Exception& /*ex*/) {
+  }
+  catch (const marisa::Exception& /*ex*/) {
     LOG(ERROR) << "invalid id for string table: " << string_id;
     return string();
   }
@@ -107,10 +109,10 @@ void StringTableBuilder::Dump(char* ptr, size_t size) {
     LOG(ERROR) << "insufficient memory to dump string table.";
     return;
   }
-
-  std::stringstream stream;
+  namespace io = boost::iostreams;
+  io::basic_array_sink<char> sink(ptr, size);
+  io::stream<io::basic_array_sink<char>> stream(sink);
   stream << trie_;
-  stream.read(ptr, size);
 }
 
 }  // namespace rime

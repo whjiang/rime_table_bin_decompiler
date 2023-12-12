@@ -4,19 +4,18 @@
 //
 // 2011-07-02 GONG Chen <chen.sst@gmail.com>
 //
+#include <rime/common.h>
+#include <rime/dict/table.h>
+#include <algorithm>
 #include <cfloat>
 #include <cstring>
-#include <algorithm>
 #include <queue>
 #include <utility>
-#include <rime/common.h>
-// #include <rime/algo/syllabifier.h>
-#include <rime/dict/table.h>
 
 namespace rime {
 
-const char kTableFormatLatest[] = "Rime::Table/4.0";
-const int kTableFormatLowestCompatible = 4.0;
+const char kTableFormatLatest[] = "Rime::Table/3.0";
+int kTableFormatLowestCompatible = 3.0;
 
 const char kTableFormatPrefix[] = "Rime::Table/";
 const size_t kTableFormatPrefixLen = sizeof(kTableFormatPrefix) - 1;
@@ -99,7 +98,7 @@ bool TableQuery::Advance(SyllableId syllable_id, double credibility) {
   }
   ++level_;
   index_code_.push_back(syllable_id);
-  credibility_.push_back(credibility_.back() + credibility);
+  credibility_.push_back(credibility_.back() * credibility);
   return true;
 }
 
@@ -118,7 +117,7 @@ void TableQuery::Reset() {
   level_ = 0;
   index_code_.clear();
   credibility_.clear();
-  credibility_.push_back(0.0);
+  credibility_.push_back(1.0);
 }
 
 inline static bool node_less(const table::TrunkIndexNode& a,
@@ -175,7 +174,7 @@ inline static Code add_syllable(Code code, SyllableId syllable_id) {
 
 TableAccessor TableQuery::Access(SyllableId syllable_id,
                                  double credibility) const {
-  credibility += credibility_.back();
+  credibility *= credibility_.back();
   if (level_ == 0) {
     if (!lv1_index_ || syllable_id < 0 ||
         syllable_id >= static_cast<SyllableId>(lv1_index_->size))
@@ -473,7 +472,7 @@ table::TailIndex* Table::BuildTailIndex(const Code& prefix,
   return index;
 }
 
-Array<table::Entry>* Table::BuildEntryArray(const ShortDictEntryList& entries) {
+Array<table::Entry>* Table::BuildEntryArray(const DictEntryList& entries) {
   auto array = CreateArray<table::Entry>(entries.size());
   if (!array) {
     return NULL;
@@ -486,8 +485,7 @@ Array<table::Entry>* Table::BuildEntryArray(const ShortDictEntryList& entries) {
   return array;
 }
 
-bool Table::BuildEntryList(const ShortDictEntryList& src,
-                           List<table::Entry>* dest) {
+bool Table::BuildEntryList(const DictEntryList& src, List<table::Entry>* dest) {
   if (!dest)
     return false;
   dest->size = src.size();
@@ -504,7 +502,7 @@ bool Table::BuildEntryList(const ShortDictEntryList& src,
   return true;
 }
 
-bool Table::BuildEntry(const ShortDictEntry& dict_entry, table::Entry* entry) {
+bool Table::BuildEntry(const DictEntry& dict_entry, table::Entry* entry) {
   if (!entry)
     return false;
   if (!AddString(dict_entry.text, &entry->text, dict_entry.weight)) {

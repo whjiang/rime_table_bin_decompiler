@@ -7,8 +7,6 @@
 #ifndef RIME_COMMON_H_
 #define RIME_COMMON_H_
 
-// #include <rime/build_config.h>
-
 #include <functional>
 #include <list>
 #include <map>
@@ -20,6 +18,7 @@
 #include <unordered_set>
 #include <utility>
 #include <vector>
+#include <boost/optional.hpp>
 #define BOOST_BIND_NO_PLACEHOLDERS
 #include <boost/signals2/connection.hpp>
 #include <boost/signals2/signal.hpp>
@@ -40,12 +39,12 @@ namespace rime {
 using std::function;
 using std::list;
 using std::make_pair;
-using std::make_unique;
 using std::map;
 using std::pair;
 using std::set;
 using std::string;
 using std::vector;
+using boost::optional;
 
 template <class Key, class T>
 using hash_map = std::unordered_map<Key, T>;

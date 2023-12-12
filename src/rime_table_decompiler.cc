@@ -1,15 +1,19 @@
-﻿#include <cmath>
+// rime_table_decompiler.cc
+// nopdan <me@nopdan.com>
+//
+#include <codepage.h>
+#include <rime/dict/table.h>
 #include <fstream>
 #include <iomanip>
 #include <ios>
 #include <iostream>
-#include <rime/dict/table.h>
-#if _MSC_VER >= 1600
-#pragma execution_character_set("utf-8")
-#endif
-#ifdef _WIN32
-#include <windows.h>
-#endif
+#include <string>
+
+
+// usage:
+//   rime_table_decompiler <rime-table-file> [save-path]
+// example:
+//   rime_table_decompiler pinyin.table.bin pinyin.dict.yaml
 
 void outCode(rime::Table* table, const rime::Code code, std::ofstream& fout) {
   if (code.empty()) {
@@ -34,9 +38,15 @@ void access(rime::Table* table,
     outCode(table, accessor.code(), fout);
 
     auto weight = accessor.entry()->weight;
+#ifdef TABLE_V3
+    if (weight > 0) {
+      fout << "\t" << weight;
+    }
+#else
     if (weight >= 0) {
       fout << "\t" << exp(weight);
     }
+#endif
     fout << std::endl;
     accessor.Next();
   }
@@ -46,7 +56,7 @@ void access(rime::Table* table,
 void recursion(rime::Table* table,
                rime::TableQuery* query,
                std::ofstream& fout) {
-  for (int i = 0; i < table->metadata_->num_syllables; i++) {
+  for (int i = 0; i < table->metadata()->num_syllables; i++) {
     auto accessor = query->Access(i);
     access(table, accessor, fout);
     if (query->Advance(i)) {
@@ -62,34 +72,37 @@ void recursion(rime::Table* table,
 }
 
 void traversal(rime::Table* table, std::ofstream& fout) {
-  auto metadata = table->metadata_;
+  auto metadata = table->metadata();
   std::cout << "num_syllables: " << metadata->num_syllables << std::endl;
   std::cout << "num_entries: " << metadata->num_entries << std::endl;
 
   fout << std::fixed;
   fout << std::setprecision(0);
-  rime::TableQuery query(table->metadata_->index.get());
+  rime::TableQuery query(table->metadata()->index.get());
   recursion(table, &query, fout);
 }
 
 int main(int argc, char* argv[]) {
-  if (argc < 2) {
+  unsigned int codepage = SetConsoleOutputCodePage();
+  if (argc < 2 || argc > 3) {
     std::cout << "Usage: rime_table_decompiler <rime-table-file> [save-path]"
               << std::endl;
     std::cout
         << "Example: rime_table_decompiler pinyin.table.bin pinyin.dict.yaml"
         << std::endl;
+    SetConsoleOutputCodePage(codepage);
     return 0;
   }
 
-#ifdef _WIN32
-  SetConsoleOutputCP(65001);
+#ifdef RIME_ENABLE_LOGGING
+  google::InitGoogleLogging(argv[0]);
 #endif
   std::string fileName(argv[1]);
   rime::Table table(fileName);
   bool success = table.Load();
   if (!success) {
     std::cerr << "Failed to load table." << std::endl;
+    SetConsoleOutputCodePage(codepage);
     return 1;
   }
 
@@ -98,13 +111,13 @@ int main(int argc, char* argv[]) {
   if (std::string::npos != table_bin_idx) {
     fileName.erase(table_bin_idx);
   }
-  const std::string outputName =
-      (argc == 3) ? argv[2]: fileName + ".yaml";
+  const std::string outputName = (argc == 3) ? argv[2] : fileName + ".yaml";
 
   std::ofstream fout;
   fout.open(outputName);
   if (!fout.is_open()) {
     std::cerr << "Failed to open file " << outputName << std::endl;
+    SetConsoleOutputCodePage(codepage);
     return 1;
   }
 
@@ -113,20 +126,21 @@ int main(int argc, char* argv[]) {
   if (std::string::npos != last_slash_idx) {
     fileName.erase(0, last_slash_idx + 1);
   }
-
-  // clang-format off
   fout << "# Rime dictionary\n\n";
   fout << "---\n"
-          "name: " << fileName << "\n"
+          "name: "
+       << fileName
+       << "\n"
           "version: \"1.0\"\n"
           "...\n\n";
-  // clang-format on
   traversal(&table, fout);
+  fout.close();
   std::cout << "Save to: " << outputName << std::endl
-       << std::endl
-       << "作者: 单单 <me@nopdan.com>" << std::endl
-       << "更新日期: 2023-9-5" << std::endl
-       << "项目地址: https://github.com/nopdan/rime-table-decompiler" << std::endl;
-  system("pause");
+            << std::endl
+            << "Author: nopdan <me@nopdan.com>" << std::endl
+            << "Date: 2023-12-12" << std::endl
+            << "Repo: https://github.com/nopdan/rime-table-decompiler"
+            << std::endl;
+  SetConsoleOutputCodePage(codepage);
   return 0;
 }
