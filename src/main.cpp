@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <ios>
 #include <iostream>
-#include "table.h"
+#include <rime/dict/table.h>
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
 #endif

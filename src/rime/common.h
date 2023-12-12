@@ -7,8 +7,6 @@
 #ifndef RIME_COMMON_H_
 #define RIME_COMMON_H_
 
-// #include <rime/build_config.h>
-
 #include <functional>
 #include <list>
 #include <map>
@@ -31,7 +29,6 @@
 #endif
 
 #ifdef RIME_ENABLE_LOGGING
-#define GLOG_NO_ABBREVIATED_SEVERITIES
 #include <glog/logging.h>
 #else
 #include "no_logging.h"
@@ -42,20 +39,17 @@
 
 #define RIME_THIS_CALL_AS(T, f) ((T*)this->*(f))
 
-#define RIME_API
-
 namespace rime {
 
-using boost::optional;
 using std::function;
 using std::list;
 using std::make_pair;
-using std::make_unique;
 using std::map;
 using std::pair;
 using std::set;
 using std::string;
 using std::vector;
+using boost::optional;
 
 template <class Key, class T>
 using hash_map = std::unordered_map<Key, T>;
@@ -90,8 +84,8 @@ inline an<T> New(Args&&... args) {
 using boost::signals2::connection;
 using boost::signals2::signal;
 #else
-using boost::signal;
 using boost::signals::connection;
+using boost::signal;
 #endif
 
 }  // namespace rime

@@ -11,22 +11,19 @@ class VoidLogger {
   VoidLogger& stream() { return *this; }
 
   template <class T>
-  VoidLogger& operator<<(const T& x) {
-    return *this;
-  }
+  VoidLogger& operator<< (const T& x) { return *this; }
 };
 
 // to avoid compiler warnings
 class Voidify {
  public:
   Voidify() {}
-  void operator&(VoidLogger&) {}
+  void operator& (VoidLogger&) {}
 };
 
 }  // namespace rime
 
-#define RIME_NO_LOG \
-  true ? (void)0 : rime::Voidify() & rime::VoidLogger().stream()
+#define RIME_NO_LOG true ? (void) 0 : rime::Voidify() & rime::VoidLogger().stream()
 
 #define LOG(severity) RIME_NO_LOG
 #define VLOG(verboselevel) RIME_NO_LOG
@@ -35,7 +32,7 @@ class Voidify {
 #define LOG_IF_EVERY_N(severity, condition, n) RIME_NO_LOG
 #define LOG_ASSERT(condition) RIME_NO_LOG
 
-#define RIME_NO_CHECK (void)0
+#define RIME_NO_CHECK (void) 0
 
 #define CHECK(condition) RIME_NO_CHECK
 #define CHECK_EQ(val1, val2) RIME_NO_CHECK
